@@ -1,0 +1,95 @@
+.app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app_authorization_photo {
+    height: 70%;
+    width: auto;
+    position: absolute;
+    margin-top: 10%;
+    margin-left: -400px;
+}
+
+.authorization_area {
+    width: 40%;
+    height: 60%;
+    border: 1px solid #8b9091;
+    border-radius: 50px;
+    margin-left: 25%;
+    margin-top: 13%;
+    position: absolute;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5%;
+    padding: 25px 0;
+
+    font-size: 50px;
+}
+
+.authorization_area_label {
+    display: contents;
+}
+
+.authorization_input {
+    height: 15%;
+    width: 80%;
+    border-radius: 50px;
+    padding-left: 50px;
+    font-size: 30px;
+    background-color: #f1f1f1;
+    border: 2px solid #a3a3a3;
+    &::placeholder {
+        font-family: 'Inter', sans-serif;
+        font-size: 30px;
+    }
+    &:hover {
+        border: 3px solid #a3a3a3;
+    }
+}
+
+.authorization_button {
+    height: 15%;
+    width: 80%;
+    border-radius: 50px;
+    font-size: 30px;
+    color: #fff;
+    background-color: #ff8400;
+    transition: .2s;
+    border: 2px solid #a3a3a3;
+    &:hover {   
+        background-color: #f27d00;
+        border-color: transparent;
+    }
+    &:active {
+        background-color: #ea7900;
+    }
+}
+
+.authorization_button-registration {
+    background-color: #fff;
+    color: #000;
+    height: 100%;
+    width: 100%;
+    &:hover {   
+        background-color: #f1f1f1;
+        border-color: transparent;
+    }
+    &:active {
+        background-color: #e0e0e0;
+    }
+}
+
+.link_authorization {
+    text-decoration: none;
+    height: 15%;
+    width: 80%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

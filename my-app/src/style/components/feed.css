@@ -1,0 +1,12 @@
+.feed {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.feed_obj {
+    width: 90%;
+    height: 200px;
+    background-color:grey;
+    margin-bottom: 20px;
+    place-self: center center;
+}

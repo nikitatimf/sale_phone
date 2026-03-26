@@ -1,0 +1,10 @@
+.nav_basket_and_profile_area {
+    gap: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.nav_line {
+    height: 2px;
+    width: 68vw;
+}
