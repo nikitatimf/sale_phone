@@ -6,7 +6,7 @@ const Authorization = () => {
         <div className='app'>
             <div className="container container-authorization">
                 Phone shop
-                <img className='app_authorization_photo' src="src/img/authorization.png"/>
+                <img className='app_authorization_photo' src="my-app/src/img/authorization.png"/>
                 <div className='authorization_area'>
                     Log in
                     <label htmlFor="email" className='authorization_area_label'></label>
