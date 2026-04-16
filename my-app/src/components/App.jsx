@@ -3,13 +3,16 @@ import Nav from './Nav'
 import Feed from './Feed'
 import Authorization from '../pages/Authorization'
 import Registration from '../pages/registration'
+import Maina from '../pages/Maina'
+
+
 
 const App = () => {
     return (
         <Routes>
             <Route path='/' element={<Authorization />}/>
             <Route path='/registration' element={<Registration />}/>
-            <Route path='*' element={<div>404</div>}/>
+            <Route path='/Maina' element={<Maina />} />   
         </Routes>
         
 

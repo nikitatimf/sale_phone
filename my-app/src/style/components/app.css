@@ -43,18 +43,34 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     padding: 25px 0;
+    
 
     font-size: 50px;
 }
-
 
 .authorization_area_label {
     display: contents;
 }
 
 .authorization_input {
+    height: 25%;
+    width: 80%;
+    border-radius: 50px;
+    padding-left: 50px;
+    font-size: 30px;
+    background-color: #f1f1f1;
+    border: 2px solid #a3a3a3;
+    &::placeholder {
+        font-family: 'Inter', sans-serif;
+        font-size: 30px;
+    }
+    &:hover {
+        border: 3px solid #a3a3a3;
+    }
+}
+
+.register_input {
     height: 20%;
     width: 80%;
     border-radius: 50px;
@@ -75,8 +91,18 @@
     border: 2px solid red;
 }
 
-.authorization_button {
+.link_authorization {
+    text-decoration: none;
     height: 20%;
+    width: 80%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.authorization_button {
+    height: 25%;
     width: 80%;
     border-radius: 50px;
     font-size: 30px;
@@ -107,9 +133,16 @@
     }
 }
 
+.auth_error {
+    visibility: hidden;
+    font-size: 30px;
+    margin-bottom: 50px;
+    color: red;
+}
+
 .link_authorization {
     text-decoration: none;
-    height: 15%;
+    height: 20%;
     width: 80%;
 
     display: flex;
@@ -119,6 +152,19 @@
 
 .form_auth {
     width: 100%;
+    height: 80%;
+    border-radius: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5%;
+
+    font-size: 50px;
+}
+
+.form_register {
+    width: 100%;
     height: 100%;
     border-radius: 50px;
     display: flex;
@@ -126,6 +172,24 @@
     align-items: center;
     justify-content: center;
     gap: 5%;
+
+    font-size: 50px;
+}
+
+.registration_area {
+    width: 40%;
+    height: 60%;
+    border: 1px solid #8b9091;
+    border-radius: 50px;
+    margin-left: 25%;
+    margin-top: 13%;
+    position: absolute;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px 0;
+    
 
     font-size: 50px;
 }
