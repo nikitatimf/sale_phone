@@ -24,6 +24,12 @@ const config = {
 
 const HTTP_PORT = 5000;
 
+async function checkPasswordHash(password, hash) {
+    const isValid = await bcrypt.compare(password, hash);
+    return isValid;
+}
+
+
 async function setupDatabase() {
     let connection;
     
@@ -78,13 +84,25 @@ app.post('/api/auth/login', async (req, res) => {
             'SELECT * FROM users WHERE email = ?', [email]
         );
 
-        /*if (existing.length > 0) {
+        // checkPasswordHash(password, existing[0].passwordHash).then(isValid => {
+        //     if (isValid) {
+        //         console.log('✅ Пароль правильный!');
+        //     } else {
+        //         console.log('❌ Неверный пароль!');
+        //     }
+        // });
+        console.log(checkPasswordHash(password ,existing[0].passwordHash))
+        //console.log(existing[0].passwordHash)
+
+        const isValidPassword = await checkPasswordHash(password, existing[0].passwordHash);
+
+        if (existing.length  === 0 || !isValidPassword) {
             await connection.end();
             return res.status(400).json({
                 success: false,
-                message: 'Пользователь с таким email уже существует'
+                message: 'Неправильный логин или пароль'
             });
-        }*/
+        }
         
         await connection.end();
         
