@@ -1,6 +1,8 @@
+import Nav from "../components/Nav/Nav"
+
 const Maina = () => {
     return (
-        <div>Success</div>
+        <Nav />
     )
 }
 

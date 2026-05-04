@@ -1,4 +1,4 @@
 import './globals.css'
-import './components/nav.css'
-import './components/feed.css'
-import './components/app.css'
+import '../components/Nav/nav.css'
+import '../components/Feed/feed.css'
+import '../components/App/app.css'
