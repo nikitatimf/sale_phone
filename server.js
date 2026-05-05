@@ -52,6 +52,34 @@ async function setupDatabase() {
             )
         `);
         console.log('✅ Таблица users создана');
+
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS phones (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255),
+                price VARCHAR(50),
+                image TEXT
+            );
+        `);
+        await connection.query(`
+            INSERT INTO phones (name, price, image) VALUES
+                ('iPhone 14', '$799', 'https://placehold.co/200'),
+                ('Samsung Galaxy S23', '$699', 'https://placehold.co/200'),
+                ('Xiaomi 13', '$599', 'https://placehold.co/200'),
+                ('Google Pixel 7', '$649', 'https://placehold.co/200');
+        `);
+        console.log('✅ Таблица phones создана');
+
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS favorites (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                userId INT,
+                phoneId INT,
+                UNIQUE KEY unique_favorite (userId, phoneId)
+            );
+        `);
+        console.log('✅ Таблица favorites создана');
+        
         
         console.log('\n🎉 База данных готова к работе!');
         
@@ -65,6 +93,7 @@ async function setupDatabase() {
         }
     }
 }
+
 
 // API маршруты
 app.post('/api/auth/login', async (req, res) => {
@@ -108,7 +137,8 @@ app.post('/api/auth/login', async (req, res) => {
         
         res.json({ 
             success: true, 
-            message: 'Авторизация прошла успешно'
+            message: 'Авторизация прошла успешно',
+            userId: existing[0].id
         });
 
 
@@ -176,7 +206,101 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
+// 📦 получить все телефоны
+app.get("/phones", async (req, res) => {
+    try {
+        const connection = await mysql.createConnection({
+            ...config,
+            database: 'shop2_db'
+        });
 
+        const [rows] = await connection.query("SELECT * FROM phones");
+
+        await connection.end();
+
+        res.json(rows);
+
+    } catch (error) {
+        console.error("Ошибка получения телефонов:", error);
+        res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+// Добавить в избранное
+app.post("/api/favorites", async (req, res) => {
+    try {
+        const { userId, phoneId } = req.body;
+
+        const connection = await mysql.createConnection({
+            ...config,
+            database: "shop2_db"
+        });
+
+        await connection.query(
+            "INSERT IGNORE INTO favorites (userId, phoneId) VALUES (?, ?)",
+            [userId, phoneId]
+        );
+
+        await connection.end();
+
+        res.json({ success: true });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+// Удалить из избранного
+app.delete("/api/favorites/:userId/:phoneId", async (req, res) => {
+    try {
+        const { userId, phoneId } = req.params;
+
+        const connection = await mysql.createConnection({
+            ...config,
+            database: "shop2_db"
+        });
+
+        await connection.query(
+            "DELETE FROM favorites WHERE userId = ? AND phoneId = ?",
+            [userId, phoneId]
+        );
+
+        await connection.end();
+
+        res.json({ success: true });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+// Получить избранное
+app.get("/api/favorites/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const connection = await mysql.createConnection({
+            ...config,
+            database: "shop2_db"
+        });
+
+        const [rows] = await connection.query(`
+            SELECT phones.* 
+            FROM favorites
+            JOIN phones ON phones.id = favorites.phoneId
+            WHERE favorites.userId = ?
+        `, [userId]);
+
+        await connection.end();
+
+        res.json(rows);
+
+    } catch (error) {
+        res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
 
 // Запускаем HTTP сервер
 app.listen(HTTP_PORT, () => {
