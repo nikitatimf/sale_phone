@@ -9,7 +9,7 @@ import Favorites from '../../pages/Favorites/Favorites'
 const PublicRoute = ({ children }) => {
   const isAuth = localStorage.getItem("token");
 
-  return isAuth ? <Navigate to="/Maina" /> : children;
+  return isAuth ? <Navigate to="/Main" /> : children;
 };
 
 

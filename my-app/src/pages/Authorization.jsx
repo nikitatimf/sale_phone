@@ -37,8 +37,9 @@ const Authorization = () => {
                 // Сохраняем токен
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem("userId", data.userId);
                 
-                navigate('/Maina'); // Переход только при успешном входе
+                navigate('/Main'); // Переход только при успешном входе
             } else {
                 console.error('Ошибка:', data.message);
                 const errMessage = document.querySelector('.auth_error');

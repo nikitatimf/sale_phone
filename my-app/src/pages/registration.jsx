@@ -68,13 +68,14 @@ const Registration = () => {
             
             if (response.status === 200 && data.success === true) {
                 setSuccess(data.message || 'Регистрация прошла успешно!');
+                localStorage.setItem("userId", data.userId);
                 
                 // Очищаем форму
                 setFormData({ name: '', email: '', password: '' });
                 
                 // Перенаправляем на страницу авторизации через 2 секунды
                 setTimeout(() => {
-                    navigate('/Maina');
+                    navigate('/Main');
                 }, 2000);
             } else {
                 // Обработка ошибок от сервера

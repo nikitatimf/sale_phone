@@ -1,29 +1,40 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./favorites.css";
 
 const Favorites = () => {
   const [favorites, setFavorites] = useState([]);
 
+  const userId = localStorage.getItem("userId");
+
+  // 📡 загрузка избранного из БД
+  const loadFavorites = async () => {
+    if (!userId) return;
+
+    const res = await fetch(`http://localhost:5000/api/favorites/${userId}`);
+    const data = await res.json();
+    setFavorites(data);
+  };
+
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("favorites")) || [];
-    setFavorites(saved);
+    loadFavorites();
   }, []);
 
-  const removeFromFavorites = (id) => {
-    const updated = favorites.filter((item) => item.id !== id);
-    setFavorites(updated);
-    localStorage.setItem("favorites", JSON.stringify(updated));
+  // ❌ удаление из БД
+  const removeFromFavorites = async (phoneId) => {
+    await fetch(`http://localhost:5000/api/favorites/${userId}/${phoneId}`, {
+      method: "DELETE"
+    });
+
+    loadFavorites(); // обновляем список
   };
 
   return (
     <div className="favorites">
-      {/* 🔝 NAVBAR */}
       <nav className="navbar">
         <h1>❤️ Favorites</h1>
         <a href="/main">← Back to shop</a>
       </nav>
 
-      {/* 📦 CONTENT */}
       {favorites.length === 0 ? (
         <p className="empty">No favorite items yet</p>
       ) : (
@@ -35,9 +46,9 @@ const Favorites = () => {
               <p>{item.price}</p>
 
               <button
-                    onClick={() => removeFromFavorites(item.id)}
-                    className="card_button"
-                >
+                onClick={() => removeFromFavorites(item.id)}
+                className="card_button"
+              >
                 Remove
               </button>
             </div>

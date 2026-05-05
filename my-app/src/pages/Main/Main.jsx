@@ -1,56 +1,85 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import "./main.css";
-
-const phones = [
-  {
-    id: 1,
-    name: "iPhone 14",
-    price: "$799",
-    image: "https://placehold.co/200"
-  },
-  {
-    id: 2,
-    name: "Samsung Galaxy S23",
-    price: "$699",
-    image: "https://placehold.co/200"
-  },
-  {
-    id: 3,
-    name: "Xiaomi 13",
-    price: "$599",
-    image: "https://placehold.co/200"
-  },
-  {
-    id: 4,
-    name: "Google Pixel 7",
-    price: "$649",
-    image: "https://placehold.co/200"
-  }
-];
+import { Link } from "react-router-dom";
 
 const Mainp = () => {
+  const [phones, setPhones] = useState([]);
   const [search, setSearch] = useState("");
+  const [favorites, setFavorites] = useState([]);
 
-  // 🔍 фильтрация
+  const userId = localStorage.getItem("userId");
+
+  // 📡 загрузка телефонов
+  useEffect(() => {
+    fetch("http://localhost:5000/phones")
+      .then((res) => res.json())
+      .then((data) => setPhones(data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  // ❤️ загрузка избранного
+  const loadFavorites = async () => {
+    if (!userId) return;
+
+    const res = await fetch(`http://localhost:5000/api/favorites/${userId}`);
+    const data = await res.json();
+    setFavorites(data);
+  };
+
+  useEffect(() => {
+    if (userId) {
+        loadFavorites();
+    }
+    }, [userId]);
+
+  // ❤️ toggle
+  const toggleFavorite = async (phone) => {
+    console.log("userId:", userId);
+console.log("phoneId:", phone.id);
+    const exists = favorites.find((item) => item.id === phone.id);
+
+    if (exists) {
+        // 🔥 ВОТ СЮДА ВСТАВЛЯЕШЬ
+        await fetch(`http://localhost:5000/api/favorites/${userId}/${phone.id}`, {
+        method: "DELETE"
+        });
+    } else {
+        await fetch("http://localhost:5000/api/favorites", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            userId,
+            phoneId: phone.id
+        })
+        });
+    }
+
+    loadFavorites();
+    };
+
+  const isFavorite = (id) => {
+    return favorites.some((item) => item.id === id);
+  };
+
+  // 🔍 поиск
   const filteredPhones = phones.filter((phone) =>
     phone.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="home">
-      {/* 🔝 NAVBAR */}
-      <nav className="navbar">
-        <h1 className="logo">📱 Auto Shop</h1>
+        <nav className="navbar">
+            <h1 className="logo">📱 Auto Shop</h1>
 
-        <div className="nav-links">
-          <a href="/main">Home</a>
-          <Link to="/favorites">Favorites</Link>
-          <a href="/profile">Profile</a>
-        </div>
-      </nav>
+            <div className="nav-links">
+                <Link to="/main">Home</Link>
+                <Link to="/favorites">Favorites</Link>
+                <Link to="/profile">Profile</Link>
+            </div>
+        </nav>
 
-      {/* 🔍 SEARCH */}
       <div className="search">
         <input
           type="text"
@@ -60,20 +89,23 @@ const Mainp = () => {
         />
       </div>
 
-      {/* 🛍️ PRODUCTS */}
       <div className="products">
-        {filteredPhones.length > 0 ? (
-          filteredPhones.map((phone) => (
-            <div key={phone.id} className="card">
-              <img src={phone.image} alt={phone.name} />
-              <h3>{phone.name}</h3>
-              <p>{phone.price}</p>
-              <button>View</button>
+        {filteredPhones.map((phone) => (
+          <div key={phone.id} className="card">
+
+            {/* ❤️ ИКОНКА */}
+            <div
+              className="favorite-icon"
+              onClick={() => toggleFavorite(phone)}
+            >
+              {isFavorite(phone.id) ? "❤️" : "🤍"}
             </div>
-          ))
-        ) : (
-          <p>Ничего не найдено</p>
-        )}
+
+            <img src={phone.image} alt={phone.name} />
+            <h3>{phone.name}</h3>
+            <p>{phone.price}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
