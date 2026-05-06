@@ -79,6 +79,37 @@ async function setupDatabase() {
             );
         `);
         console.log('✅ Таблица favorites создана');
+
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS cart (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                userId INT,
+                phoneId INT,
+                quantity INT DEFAULT 1,
+                UNIQUE KEY unique_cart (userId, phoneId)
+            );
+        `);
+        console.log('✅ Таблица favorites создана');
+
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS orders (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                userId INT,
+                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                status VARCHAR(50) DEFAULT 'processing'
+            );
+        `);
+        console.log('✅ Таблица orders создана');
+
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS order_items (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                orderId INT,
+                phoneId INT,
+                quantity INT
+            );
+        `);
+        console.log('✅ Таблица order_items создана');
         
         
         console.log('\n🎉 База данных готова к работе!');
@@ -299,6 +330,174 @@ app.get("/api/favorites/:userId", async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+// Добавить в корзину
+app.post("/api/cart", async (req, res) => {
+    try {
+        const { userId, phoneId } = req.body;
+
+        const connection = await mysql.createConnection({
+            ...config,
+            database: "shop2_db"
+        });
+
+        // если уже есть — увеличиваем количество
+        await connection.query(`
+            INSERT INTO cart (userId, phoneId, quantity)
+            VALUES (?, ?, 1)
+            ON DUPLICATE KEY UPDATE quantity = quantity + 1
+        `, [userId, phoneId]);
+
+        await connection.end();
+
+        res.json({ success: true });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+// Удалить из корзины
+app.delete("/api/cart/:userId/:phoneId", async (req, res) => {
+    try {
+        const { userId, phoneId } = req.params;
+
+        const connection = await mysql.createConnection({
+            ...config,
+            database: "shop2_db"
+        });
+
+        await connection.query(
+            "DELETE FROM cart WHERE userId = ? AND phoneId = ?",
+            [userId, phoneId]
+        );
+
+        await connection.end();
+
+        res.json({ success: true });
+
+    } catch (error) {
+        res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+// Получить из корзины
+app.get("/api/cart/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const connection = await mysql.createConnection({
+            ...config,
+            database: "shop2_db"
+        });
+
+        const [rows] = await connection.query(`
+            SELECT phones.*, cart.quantity
+            FROM cart
+            JOIN phones ON phones.id = cart.phoneId
+            WHERE cart.userId = ?
+        `, [userId]);
+
+        await connection.end();
+
+        res.json(rows);
+
+    } catch (error) {
+        res.status(500).json({ error: "Ошибка сервера" });
+    }
+});
+
+app.get("/api/profile/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const connection = await mysql.createConnection({
+            ...config,
+            database: "shop2_db"
+        });
+
+        const [rows] = await connection.query(
+            "SELECT id, email, name, createdAt FROM users WHERE id = ?",
+            [userId]
+        );
+
+        await connection.end();
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.json(rows[0]);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+app.get("/api/phones/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const connection = await mysql.createConnection({
+            ...config,
+            database: "shop2_db"
+        });
+
+        const [rows] = await connection.query(
+            "SELECT * FROM phones WHERE id = ?",
+            [id]
+        );
+
+        await connection.end();
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "Not found" });
+        }
+
+        res.json(rows[0]);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+// Получить заказы
+app.get("/api/orders/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const connection = await mysql.createConnection({
+            ...config,
+            database: "shop2_db"
+        });
+
+        const [orders] = await connection.query(`
+            SELECT * FROM orders WHERE userId = ?
+        `, [userId]);
+
+        for (let order of orders) {
+            const [items] = await connection.query(`
+                SELECT phones.*, order_items.quantity
+                FROM order_items
+                JOIN phones ON phones.id = order_items.phoneId
+                WHERE order_items.orderId = ?
+            `, [order.id]);
+
+            order.items = items;
+        }
+
+        await connection.end();
+
+        res.json(orders);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
     }
 });
 
