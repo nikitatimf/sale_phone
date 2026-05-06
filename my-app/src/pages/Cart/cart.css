@@ -1,0 +1,161 @@
+/* 🌐 общий фон */
+.cart {
+  min-height: 100vh;
+  background: #f4f6fb;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* 🔝 navbar */
+.cart .navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #111;
+  color: white;
+
+  padding: 15px 20px;
+  border-radius: 12px;
+
+  margin-bottom: 20px;
+}
+
+.cart .navbar a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.cart .navbar a:hover {
+  opacity: 1;
+}
+
+/* 📦 layout */
+.cart-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* 🛍 список товаров */
+.cart-items {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* 📦 карточка товара */
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  background: white;
+  padding: 15px;
+
+  border-radius: 14px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* 🖼 изображение */
+.cart-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* 📄 инфо */
+.cart-info {
+  flex: 1;
+}
+
+.cart-info h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.cart-info p {
+  margin: 5px 0;
+  color: #666;
+}
+
+/* 🔢 количество */
+.cart-quantity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  background: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+/* ❌ кнопка удаления */
+.remove-btn {
+  background: #ff3b30;
+  color: white;
+  border: none;
+
+  padding: 8px 12px;
+  border-radius: 10px;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.remove-btn:hover {
+  background: #d92c22;
+}
+
+/* 💰 итог */
+.cart-summary {
+  flex: 1;
+
+  background: white;
+  padding: 20px;
+
+  border-radius: 14px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+
+  position: sticky;
+  top: 20px;
+}
+
+.cart-summary h2 {
+  margin-bottom: 15px;
+}
+
+/* 💳 кнопка checkout */
+.checkout-btn {
+  width: 100%;
+  padding: 12px;
+
+  background: #22c55e;
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  font-size: 16px;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.checkout-btn:hover {
+  background: #16a34a;
+}
+
+/* 📱 адаптив */
+@media (max-width: 768px) {
+  .cart-container {
+    flex-direction: column;
+  }
+
+  .cart-summary {
+    position: static;
+  }
+}

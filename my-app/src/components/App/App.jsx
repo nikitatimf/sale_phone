@@ -4,6 +4,10 @@ import Authorization from '../../pages/Authorization'
 import Registration from '../../pages/registration'
 import Mainp from '../../pages/Main/Main'
 import Favorites from '../../pages/Favorites/Favorites'
+import Cart from '../../pages/Cart/Cart'
+import Profile from '../../pages/Profile/Profile'
+import Product from '../../pages/Product/Product'
+import Orders from '../../pages/Orders/Orders'
 
 
 const PublicRoute = ({ children }) => {
@@ -35,6 +39,10 @@ const App = () => {
             />
             <Route path='/Main' element={<Mainp />} />   
             <Route path='/Favorites' element={<Favorites />} />
+            <Route path='/Cart' element={<Cart />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/product/:id" element={<Product />} />
+            <Route path="/orders" element={<Orders />} />
         </Routes>
     )
 }

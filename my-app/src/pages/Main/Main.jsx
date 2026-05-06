@@ -6,6 +6,8 @@ const Mainp = () => {
   const [phones, setPhones] = useState([]);
   const [search, setSearch] = useState("");
   const [favorites, setFavorites] = useState([]);
+  const [sort, setSort] = useState("default");
+  const [brand, setBrand] = useState("all");
 
   const userId = localStorage.getItem("userId");
 
@@ -64,9 +66,39 @@ console.log("phoneId:", phone.id);
   };
 
   // 🔍 поиск
-  const filteredPhones = phones.filter((phone) =>
-    phone.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredPhones = phones
+  .filter((phone) => {
+    const matchesSearch = phone.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesBrand =
+      brand === "all" || phone.name.includes(brand);
+
+    return matchesSearch && matchesBrand;
+  })
+  .sort((a, b) => {
+    const priceA = parseInt(a.price.replace("$", ""));
+    const priceB = parseInt(b.price.replace("$", ""));
+
+    if (sort === "low") return priceA - priceB;
+    if (sort === "high") return priceB - priceA;
+
+    return 0;
+  });
+
+  const addToCart = async (phone) => {
+    await fetch("http://localhost:5000/api/cart", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+        userId,
+        phoneId: phone.id
+        })
+    });
+  };
 
   return (
     <div className="home">
@@ -76,6 +108,8 @@ console.log("phoneId:", phone.id);
             <div className="nav-links">
                 <Link to="/main">Home</Link>
                 <Link to="/favorites">Favorites</Link>
+                <Link to="/cart">Cart</Link>
+                <Link to="/orders">My Orders</Link>
                 <Link to="/profile">Profile</Link>
             </div>
         </nav>
@@ -87,6 +121,24 @@ console.log("phoneId:", phone.id);
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+      </div>
+
+      <div className="filters">
+        {/* 📱 фильтр */}
+        <select onChange={(e) => setBrand(e.target.value)}>
+            <option value="all">All brands</option>
+            <option value="iPhone">iPhone</option>
+            <option value="Samsung">Samsung</option>
+            <option value="Xiaomi">Xiaomi</option>
+            <option value="Google">Google</option>
+        </select>
+
+        {/* 💰 сортировка */}
+        <select onChange={(e) => setSort(e.target.value)}>
+            <option value="default">Default</option>
+            <option value="low">Price: Low → High</option>
+            <option value="high">Price: High → Low</option>
+        </select>
       </div>
 
       <div className="products">
@@ -104,6 +156,12 @@ console.log("phoneId:", phone.id);
             <img src={phone.image} alt={phone.name} />
             <h3>{phone.name}</h3>
             <p>{phone.price}</p>
+            <button onClick={() => addToCart(phone)}>
+                🛒 Add to cart
+            </button>
+            <Link to={`/product/${phone.id}`}>
+                <button>View</button>
+            </Link>
           </div>
         ))}
       </div>

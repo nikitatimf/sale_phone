@@ -1,0 +1,67 @@
+.profile {
+  min-height: 100vh;
+  background: #f4f6fb;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* navbar */
+.profile .navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #111;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.profile .navbar a {
+  color: white;
+  text-decoration: none;
+}
+
+/* карточка */
+.profile-card {
+  max-width: 400px;
+  margin: 0 auto;
+
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* аватар */
+.avatar {
+  font-size: 60px;
+  margin-bottom: 10px;
+}
+
+/* текст */
+.profile-card h2 {
+  margin: 10px 0;
+}
+
+.profile-card p {
+  color: #555;
+  margin: 5px 0;
+}
+
+/* кнопка */
+.profile-card button {
+  margin-top: 15px;
+  padding: 10px 15px;
+
+  background: red;
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+}
