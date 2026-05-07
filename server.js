@@ -240,20 +240,34 @@ app.post('/api/auth/register', async (req, res) => {
 // 📦 получить все телефоны
 app.get("/phones", async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 4;
+
+        const offset = (page - 1) * limit;
+
         const connection = await mysql.createConnection({
             ...config,
-            database: 'shop2_db'
+            database: "shop2_db"
         });
 
-        const [rows] = await connection.query("SELECT * FROM phones");
+        const [rows] = await connection.query(
+            "SELECT * FROM phones LIMIT ? OFFSET ?",
+            [limit, offset]
+        );
+
+        const [countResult] = await connection.query(
+            "SELECT COUNT(*) as count FROM phones"
+        );
 
         await connection.end();
 
-        res.json(rows);
+        res.json({
+            data: rows,
+            total: countResult[0].count
+        });
 
     } catch (error) {
-        console.error("Ошибка получения телефонов:", error);
-        res.status(500).json({ error: "Ошибка сервера" });
+        res.status(500).json({ error: "Server error" });
     }
 });
 
@@ -499,6 +513,24 @@ app.get("/api/orders/:userId", async (req, res) => {
         console.error(error);
         res.status(500).json({ error: "Server error" });
     }
+});
+
+app.get("/api/user/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const connection = await mysql.createConnection({
+    ...config,
+    database: "shop2_db"
+  });
+
+  const [rows] = await connection.query(
+    "SELECT id, name FROM users WHERE id = ?",
+    [id]
+  );
+
+  await connection.end();
+
+  res.json(rows[0]);
 });
 
 // Запускаем HTTP сервер
