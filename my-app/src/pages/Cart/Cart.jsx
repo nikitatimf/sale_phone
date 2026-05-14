@@ -20,7 +20,7 @@ const Cart = () => {
     loadCart();
   }, []);
 
-  // ❌ удалить товар
+  //  удалить товар
   const removeFromCart = async (phoneId) => {
     await fetch(`http://localhost:5000/api/cart/${userId}/${phoneId}`, {
       method: "DELETE"
@@ -43,10 +43,10 @@ const Cart = () => {
         <Link to="/main">← Back to shop</Link>
       </nav>
 
-      {/* 📦 CONTENT */}
+      {/*  CONTENT */}
       <div className="cart-container">
 
-        {/* 🛍 список товаров */}
+        {/*  список товаров */}
         <div className="cart-items">
           {cart.length === 0 ? (
             <p>No items in cart</p>
@@ -77,7 +77,7 @@ const Cart = () => {
           )}
         </div>
 
-        {/* 💰 итог */}
+        {/*  итог */}
         <div className="cart-summary">
           <h2>Total: ${total}</h2>
 

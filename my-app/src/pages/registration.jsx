@@ -6,11 +6,19 @@ const Registration = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        password: ''
+        password: '',
+        confirmPassword: ''
     });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [passwordErrors, setPasswordErrors] = useState({
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        digit: false,
+        specialChar: false
+    });
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -18,8 +26,30 @@ const Registration = () => {
             ...prev,
             [id]: value
         }));
+        
         // Убираем класс ошибки при вводе
         e.target.classList.remove('input_error');
+        
+        // Если меняется поле password, проверяем его сложность
+        if (id === 'password') {
+            validatePasswordStrength(value);
+        }
+    };
+
+    // Функция проверки сложности пароля
+    const validatePasswordStrength = (password) => {
+        setPasswordErrors({
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            digit: /[0-9]/.test(password),
+            specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+        });
+    };
+
+    // Проверка, что все требования к паролю выполнены
+    const isPasswordStrong = () => {
+        return Object.values(passwordErrors).every(Boolean);
     };
 
     const handleSubmit = async (e) => {
@@ -28,22 +58,44 @@ const Registration = () => {
         setError('');
         setSuccess('');
         
-        // Валидация
-        if (!formData.name.trim() || !formData.email.trim() || !formData.password.trim()) {
-            setError('Заполните все поля');
+        // Валидация имени
+        if (!formData.name.trim()) {
+            setError('Введите имя');
+            return;
+        }
+        
+        if (formData.name.length < 2) {
+            setError('Имя должно содержать минимум 2 символа');
             return;
         }
         
         // Валидация email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.email)) {
-            setError('Введите корректный email');
+        if (!formData.email.trim()) {
+            setError('Введите email');
             return;
         }
         
-        // Валидация пароля (минимум 6 символов)
-        if (formData.password.length < 6) {
-            setError('Пароль должен содержать минимум 6 символов');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            setError('Введите корректный email (например: user@example.com)');
+            return;
+        }
+        
+        // Валидация пароля
+        if (!formData.password) {
+            setError('Введите пароль');
+            return;
+        }
+        
+        // Проверка сложности пароля
+        if (!isPasswordStrong()) {
+            setError('Пароль не соответствует требованиям безопасности');
+            return;
+        }
+        
+        // Проверка совпадения паролей
+        if (formData.password !== formData.confirmPassword) {
+            setError('Пароли не совпадают');
             return;
         }
 
@@ -71,9 +123,23 @@ const Registration = () => {
                 localStorage.setItem("userId", data.userId);
                 
                 // Очищаем форму
-                setFormData({ name: '', email: '', password: '' });
+                setFormData({ 
+                    name: '', 
+                    email: '', 
+                    password: '',
+                    confirmPassword: '' 
+                });
                 
-                // Перенаправляем на страницу авторизации через 2 секунды
+                // Сбрасываем ошибки пароля
+                setPasswordErrors({
+                    length: false,
+                    uppercase: false,
+                    lowercase: false,
+                    digit: false,
+                    specialChar: false
+                });
+                
+                // Перенаправляем на главную страницу через 2 секунды
                 setTimeout(() => {
                     navigate('/Main');
                 }, 2000);
@@ -116,7 +182,7 @@ const Registration = () => {
                             id="name" 
                             type="text" 
                             className='register_input' 
-                            placeholder='Name'
+                            placeholder='Name (минимум 2 символа)'
                             value={formData.name}
                             onChange={handleChange}
                             disabled={isLoading}
@@ -138,17 +204,78 @@ const Registration = () => {
                             id="password" 
                             type="password" 
                             className='register_input'
-                            placeholder='Password (min 6 characters)'
+                            placeholder='Password'
                             value={formData.password}
                             onChange={handleChange}
                             disabled={isLoading}
                             required
                         />
+                        
+                        {/* Индикатор сложности пароля */}
+                        {formData.password && (
+                            <div className="password-strength">
+                                <div className="password-requirements">
+                                    <p style={{ 
+                                        color: passwordErrors.length ? 'green' : 'red',
+                                        fontSize: '12px',
+                                        margin: '2px 0'
+                                    }}>
+                                        ✓ Минимум 8 символов
+                                    </p>
+                                    <p style={{ 
+                                        color: passwordErrors.uppercase ? 'green' : 'red',
+                                        fontSize: '12px',
+                                        margin: '2px 0'
+                                    }}>
+                                        ✓ Заглавная буква (A-Z)
+                                    </p>
+                                    <p style={{ 
+                                        color: passwordErrors.lowercase ? 'green' : 'red',
+                                        fontSize: '12px',
+                                        margin: '2px 0'
+                                    }}>
+                                        ✓ Строчная буква (a-z)
+                                    </p>
+                                    <p style={{ 
+                                        color: passwordErrors.digit ? 'green' : 'red',
+                                        fontSize: '12px',
+                                        margin: '2px 0'
+                                    }}>
+                                        ✓ Цифра (0-9)
+                                    </p>
+                                    <p style={{ 
+                                        color: passwordErrors.specialChar ? 'green' : 'red',
+                                        fontSize: '12px',
+                                        margin: '2px 0'
+                                    }}>
+                                        ✓ Специальный символ (!@#$%^&*)
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        <input 
+                            id="confirmPassword" 
+                            type="password" 
+                            className='register_input'
+                            placeholder='Подтвердите пароль'
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            disabled={isLoading}
+                            required
+                        />
+                        
+                        {/* Проверка совпадения паролей */}
+                        {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                            <div style={{ color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px' }}>
+                                ⚠️ Пароли не совпадают
+                            </div>
+                        )}
 
                         <button 
                             type="submit"
                             className='link_authorization authorization_button'
-                            disabled={isLoading}
+                            disabled={isLoading || (formData.password && !isPasswordStrong())}
                         >
                             {isLoading ? 'Регистрация...' : 'Registration'}
                         </button>

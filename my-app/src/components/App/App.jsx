@@ -21,7 +21,7 @@ const App = () => {
   return (
     <Routes>
 
-      {/* 🔓 public */}
+      {/*  public */}
       <Route
         path="/"
         element={
@@ -40,7 +40,7 @@ const App = () => {
         }
       />
 
-      {/* 🔒 protected */}
+      {/*  protected */}
       <Route
         path="/Main"
         element={
