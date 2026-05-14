@@ -144,13 +144,7 @@ app.post('/api/auth/login', async (req, res) => {
             'SELECT * FROM users WHERE email = ?', [email]
         );
 
-        // checkPasswordHash(password, existing[0].passwordHash).then(isValid => {
-        //     if (isValid) {
-        //         console.log('✅ Пароль правильный!');
-        //     } else {
-        //         console.log('❌ Неверный пароль!');
-        //     }
-        // });
+        
         console.log(checkPasswordHash(password ,existing[0].passwordHash))
         //console.log(existing[0].passwordHash)
 
@@ -237,7 +231,7 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
-// 📦 получить все телефоны
+//  получить все телефоны
 app.get("/phones", async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -531,6 +525,75 @@ app.get("/api/user/:id", async (req, res) => {
   await connection.end();
 
   res.json(rows[0]);
+});
+
+
+// Обновление профиля
+app.put('/api/profile/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { name, email, currentPassword, newPassword } = req.body;
+
+    const connection = await mysql.createConnection({
+      ...config,
+      database: 'shop2_db'
+    });
+
+    // Проверяем существование пользователя
+    const [users] = await connection.query(
+      'SELECT * FROM users WHERE id = ?',
+      [userId]
+    );
+
+    if (users.length === 0) {
+      await connection.end();
+      return res.status(404).json({
+        success: false,
+        message: 'Пользователь не найден'
+      });
+    }
+
+    const user = users[0];
+
+    // Если меняем пароль
+    if (newPassword) {
+      const isValidPassword = await bcrypt.compare(currentPassword, user.passwordHash);
+      
+      if (!isValidPassword) {
+        await connection.end();
+        return res.status(401).json({
+          success: false,
+          message: 'Неверный текущий пароль'
+        });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      await connection.query(
+        'UPDATE users SET name = ?, email = ?, passwordHash = ? WHERE id = ?',
+        [name, email, hashedPassword, userId]
+      );
+    } else {
+      await connection.query(
+        'UPDATE users SET name = ?, email = ? WHERE id = ?',
+        [name, email, userId]
+      );
+    }
+
+    await connection.end();
+
+    res.json({
+      success: true,
+      message: 'Профиль успешно обновлён'
+    });
+
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка сервера при обновлении профиля'
+    });
+  }
 });
 
 // Запускаем HTTP сервер
