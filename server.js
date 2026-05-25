@@ -4,6 +4,15 @@ const cors = require('cors');  // ← ДОБАВИТЬ
 const app = express();
 const bcrypt = require('bcrypt');
 
+const cors = require('cors');
+app.use(cors()); // Разрешает все запросы — для начала подойдёт
+
+const cors = require('cors');
+app.use(cors({
+  origin: 'https://ваш-сайт.netlify.app',  // URL вашего фронтенда на Netlify
+  credentials: true
+}));
+
 // НАСТРОЙКИ CORS - ДОБАВИТЬ ЭТО
 app.use(cors({
     origin: 'http://localhost:5173',  // Разрешаем запросы с React приложения
