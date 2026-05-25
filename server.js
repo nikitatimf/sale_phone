@@ -231,6 +231,8 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
+
+
 //  получить все телефоны
 app.get("/phones", async (req, res) => {
     try {
@@ -592,7 +594,7 @@ app.put('/api/profile/:userId', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Ошибка сервера при обновлении профиля'
-    });
+    }); 
   }
 });
 
