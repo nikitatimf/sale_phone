@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./cart.css";
-import { Link } from "react-router-dom";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
+  const [userName, setUserName] = useState("");
 
   const userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
 
   // 📦 загрузка корзины
   const loadCart = async () => {
@@ -16,17 +18,32 @@ const Cart = () => {
     setCart(data);
   };
 
+  // загрузка имени пользователя
+  const loadUser = async () => {
+    if (!userId) return;
+
+    const res = await fetch(`http://localhost:5000/api/user/${userId}`);
+    const data = await res.json();
+    setUserName(data.name);
+  };
+
   useEffect(() => {
     loadCart();
+    loadUser();
   }, []);
 
-  //  удалить товар
+  // удалить товар
   const removeFromCart = async (phoneId) => {
     await fetch(`http://localhost:5000/api/cart/${userId}/${phoneId}`, {
       method: "DELETE"
     });
 
     loadCart();
+  };
+
+  const logout = () => {
+    localStorage.removeItem("userId");
+    navigate("/");
   };
 
   // 💰 подсчёт суммы
@@ -37,16 +54,43 @@ const Cart = () => {
 
   return (
     <div className="cart">
-      {/* 🔝 NAVBAR */}
+      {/* 🔝 NAVBAR как в Mainp */}
       <nav className="navbar">
-        <h1>🛒 Cart</h1>
-        <Link to="/main">← Back to shop</Link>
+        <h1 className="logo">📱 Auto Shop</h1>
+
+        <div className="nav-links">
+          <Link to="/main">Home</Link>
+          <Link to="/favorites">Favorites</Link>
+          <Link to="/cart">Cart</Link>
+          <Link to="/orders">Orders</Link>
+          <Link to="/profile">Profile</Link>
+        </div>
+
+        <div className="auth-box">
+          {userId ? (
+            <>
+              <span className="username">👤 {userName || "User"}</span>
+              <button onClick={logout} className="logout-btn">
+                Выйти
+              </button>
+            </>
+          ) : (
+            <Link to="/">
+              <button className="login-btn">Войти</button>
+            </Link>
+          )}
+        </div>
       </nav>
 
-      {/*  CONTENT */}
+      {/* Заголовок страницы корзины */}
+      <div style={{ padding: "20px", textAlign: "center" }}>
+        <h1>🛒 Моя корзина</h1>
+      </div>
+
+      {/* CONTENT */}
       <div className="cart-container">
 
-        {/*  список товаров */}
+        {/* список товаров */}
         <div className="cart-items">
           {cart.length === 0 ? (
             <p>No items in cart</p>
@@ -77,7 +121,7 @@ const Cart = () => {
           )}
         </div>
 
-        {/*  итог */}
+        {/* итог */}
         <div className="cart-summary">
           <h2>Total: ${total}</h2>
 

@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
+import './Authorization.css' // Создайте этот файл
 
 const Authorization = () => {
     const navigate = useNavigate();
@@ -8,14 +9,13 @@ const Authorization = () => {
             const emailValue = document.querySelector('#email').value;
             const passwordValue = document.querySelector('#password').value;
             
-            // Добавьте проверку на пустые поля
             if (!emailValue || !passwordValue) {
                 const errMessage = document.querySelector('.auth_error');
                 if (errMessage) {
                     errMessage.textContent = 'Заполните все поля';
                     errMessage.style.visibility = 'visible';
                 }
-                return; // Выходим из функции, если поля пустые
+                return;
             }
             
             const response = await fetch('http://localhost:5000/api/auth/login', {
@@ -30,16 +30,13 @@ const Authorization = () => {
             });
 
             const data = await response.json();
-            console.log(response)
             
             if (response.ok) {
                 console.log('Успех:', data);
-                // Сохраняем токен
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 localStorage.setItem("userId", data.userId);
-                
-                navigate('/Main'); // Переход только при успешном входе
+                navigate('/main');
             } else {
                 console.error('Ошибка:', data.message);
                 const errMessage = document.querySelector('.auth_error');
@@ -59,42 +56,56 @@ const Authorization = () => {
     }
 
     return (
-        <div className='app'>
-            <div className="container container-authorization">
-                Phone shop
-                <img className='app_authorization_photo' src="my-app/src/img/authorization.png" alt="authorization"/>
-                <div className='authorization_area'>
-                    Log in
-                    <div className='form_auth'>
-                        <label htmlFor="email" className='authorization_area_label'></label>
-                        <input 
-                            id="email" 
-                            type="email" 
-                            className='authorization_input' 
-                            placeholder='Email'
-                        />
+        <div className='auth-app'>
+            <div className="auth-container">
+                <div className="auth-left">
+                    <h1 className="auth-title">Phone Shop</h1>
+                </div>
+                
+                <div className="auth-right">
+                    <div className="auth-form-container">
+                        <h2 className="auth-form-title">Welcome Back!</h2>
+                        <p className="auth-subtitle">Please login to your account</p>
+                        
+                        <div className="auth-form">
+                            <div className="input-group">
+                                <label htmlFor="email" className="input-label">Email Address</label>
+                                <input 
+                                    id="email" 
+                                    type="email" 
+                                    className="auth-input" 
+                                    placeholder="Enter your email"
+                                />
+                            </div>
 
-                        <label htmlFor="password" className='authorization_area_label'></label>
-                        <input 
-                            id="password" 
-                            type="password" 
-                            className='authorization_input'
-                            placeholder='Password'
-                        />
+                            <div className="input-group">
+                                <label htmlFor="password" className="input-label">Password</label>
+                                <input 
+                                    id="password" 
+                                    type="password" 
+                                    className="auth-input"
+                                    placeholder="Enter your password"
+                                />
+                            </div>
 
-                        <button 
-                            type="button"
-                            className='link_authorization authorization_button'
-                            onClick={click}
-                        >
-                            Log in
-                        </button>
+                            <button 
+                                type="button"
+                                className="login-btn"
+                                onClick={click}
+                            >
+                                Log In
+                            </button>
+                        </div>
+                        
+                        <div className="auth_error">Неверный логин или пароль</div>
+                        
+                        <div className="auth-footer">
+                            <p className="auth-footer-text">Don't have an account?</p>
+                            <Link to="/registration" className="register-link">
+                                Create Account
+                            </Link>
+                        </div>
                     </div>
-                    
-                    <div className='auth_error'>Неверный логин или пароль</div>
-                    <Link to="/registration" className='link_authorization authorization_button authorization_button-registration'>
-                        Registration
-                    </Link>
                 </div>
             </div>
         </div>
