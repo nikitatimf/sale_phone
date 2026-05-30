@@ -38,7 +38,7 @@ const Mainp = () => {
 
   const limit = 4;
 
-  // 📡 загрузка телефонов (пагинация)
+  // загрузка телефонов (пагинация)
   const loadPhones = async (pageNum) => {
   try {
     const res = await fetch(
@@ -120,7 +120,7 @@ const Mainp = () => {
     });
   };
 
-  // 🔍 фильтрация + сортировка
+  // фильтрация + сортировка
   const filteredPhones = phones
     .filter((phone) => {
       const matchesSearch = phone.name
@@ -145,7 +145,7 @@ const Mainp = () => {
   return (
     <div className="home">
 
-      {/* 🔝 NAVBAR */}
+      {/* NAVBAR */}
       <nav className="navbar">
         <h1 className="logo">📱 Auto Shop</h1>
 
@@ -173,7 +173,7 @@ const Mainp = () => {
         </div>
       </nav>
 
-      {/* 🔍 SEARCH */}
+      {/* SEARCH */}
       <div className="search">
         <input
           type="text"
@@ -183,7 +183,7 @@ const Mainp = () => {
         />
       </div>
 
-      {/* 🔧 FILTERS */}
+      {/* FILTERS */}
       <div className="filters">
         <select onChange={(e) => setBrand(e.target.value)}>
           <option value="all">All brands</option>
@@ -200,12 +200,11 @@ const Mainp = () => {
         </select>
       </div>
 
-      {/* 🛍 PRODUCTS */}
+      {/* PRODUCTS */}
       <div className="products">
         {filteredPhones.map((phone) => (
           <div key={phone.id} className="card">
 
-            {/* ❤️ */}
             <div
               className="favorite-icon"
               onClick={() => toggleFavorite(phone)}
@@ -228,7 +227,7 @@ const Mainp = () => {
         ))}
       </div>
 
-      {/* 🔥 LOAD MORE */}
+      {/* LOAD MORE */}
       {hasMore && (
         <div style={{ textAlign: "center", margin: "20px" }}>
           <button
